@@ -127,6 +127,15 @@ LOGIN_URL = 'login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+EMAIL_HOST = "smtp.mail.ru"
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = "akhmed.a.14@mail.ru"
+EMAIL_HOST_PASSWORD = "62hSkXMAcdrb8Uy6wJ3q"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 

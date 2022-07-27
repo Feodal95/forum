@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 from service.models import Post, Comment
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import PostForm, CommentForm, UserRegisterForm
+from .forms import PostForm, CommentForm, UserRegisterForm, MessageForm
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.mail import send_mail
 
 
 
@@ -15,7 +17,19 @@ def index(req):
 
 
 def about(req):
-    return render(req, 'about.html')
+    form = MessageForm()
+    if req.method == "POST":
+        form = MessageForm(req.POST)
+        if form.is_valid():
+            subject = form.cleaned_data.get("title")
+            body = form.cleaned_data.get("body")
+            try:
+                send_mail(subject, body, settings.EMAIL_HOST_USER, ["fiwahi2172@chimpad.com"], fail_silently=False)
+                form.save()
+            except Exception as err:
+                print(str(err))
+            return redirect('about')
+    return render(req, 'about.html', {"form": form})
 
 class RegisterForm(SuccessMessageMixin, CreateView):
     form_class = UserRegisterForm
@@ -38,7 +52,8 @@ class DetailPostView(DetailView):
 #     template_name = "create_post.html"
 #     form_class = PostForm
 #     # fields = "__all__"
-
+@login_required
+@permission_required("service.add_post")
 def create_post(req):
     form = PostForm()
     if req.method == "POST":
