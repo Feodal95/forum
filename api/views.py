@@ -1,4 +1,5 @@
 # from django.shortcuts import render
+import logging
 from django.contrib import auth
 import service
 from rest_framework import viewsets
@@ -14,12 +15,17 @@ from rest_framework import authentication, permissions
 from rest_framework import generics, mixins
 from api.utils import Sum
 
+logger = logging.getLogger('django')
+
 class CheckboxViewSet(viewsets.ModelViewSet):
     queryset = Checkbox.objects.all()
     serializer_class = CheckboxSerializer
     @action(detail=False, methods=["get"])
     def limit(self, req, pk=None):
-        params = req.query_params
+        try:
+            params = req.query_params
+        except Exception as error:
+            logger.error('Error: %s', error)
         return Response({"result":"limit"})
 
     # @action(detail=False, methods=["post"])
